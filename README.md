@@ -1,200 +1,132 @@
-# OrbitBoard — Instruções para iniciar o trabalho da equipe
+# OrbitBoard
 
-Este documento descreve como obter o código-fonte base do projeto **OrbitBoard**, criar um repositório próprio da equipe no GitHub e realizar todo o desenvolvimento nesse novo repositório.
+Painel didático de gestão de projetos, tarefas e equipe — aplicação full stack usada como estudo de caso do Módulo 5 (Integração Full Stack) da capacitação em IA e Transformação Digital.
 
-> **Importante:** o repositório fornecido pelo docente deve ser utilizado apenas como fonte inicial. Cada equipe deverá trabalhar exclusivamente em seu próprio repositório.
+## Equipe
 
----
+> Preencher com o nome de cada integrante da equipe.
 
-## 1. Clonar o repositório base
+- Integrante 1
+- Integrante 2
+- Integrante 3
 
-Abra um terminal e execute:
+## Objetivo didático
+
+Aplicar, na prática, os conteúdos de integração full stack: revisar e executar uma aplicação com front-end, back-end/API e infraestrutura conteinerizada, validar a comunicação HTTP/JSON, ajustar CORS e variáveis de ambiente, documentar o contrato da API e registrar evidências de testes.
+
+## Arquitetura resumida
+
+- **Front-end**: React 18 + Vite, servido em produção por Nginx.
+- **Back-end**: API REST em .NET 8 / ASP.NET Core, com dados mantidos em memória (sem banco de dados externo).
+- **Infraestrutura**: containers Docker para front-end e back-end, orquestrados por `docker-compose.yml`.
+
+Detalhamento completo em [`docs/arquitetura.md`](docs/arquitetura.md).
+
+## Tecnologias utilizadas
+
+| Camada | Tecnologias |
+|---|---|
+| Front-end | React 18, Vite, React Router, Nginx (produção) |
+| Back-end | .NET 8, ASP.NET Core Web API, Swashbuckle (Swagger) |
+| Infraestrutura | Docker, Docker Compose |
+
+## Como executar
+
+### Opção 1 — Docker Compose (recomendado)
+
+Pré-requisito: Docker instalado.
 
 ```bash
-git clone https://github.com/denkencapacitacao/orbit-board-project.git
+cp .env.example .env
+docker compose up --build
 ```
 
-Acesse a pasta criada:
+- Front-end: http://localhost:8080
+- Back-end/API: http://localhost:5200
+- Swagger: http://localhost:5200/swagger
+- Health check da API: http://localhost:5200/health
+- Health check do front-end: http://localhost:8080/health
+
+Para encerrar:
 
 ```bash
-cd orbit-board-project
+docker compose down
 ```
 
-Confirme o estado do projeto:
+### Opção 2 — Executando localmente (sem Docker)
+
+Back-end (a partir da pasta `backend`):
 
 ```bash
-git status
+dotnet restore OrbitBoard.Api.sln
+dotnet run --project OrbitBoard.Api
 ```
 
----
+A API sobe em `http://localhost:5200`. Detalhes em [`backend/README.md`](backend/README.md).
 
-## 2. Criar o repositório remoto da equipe no GitHub
+Front-end (a partir da pasta `frontend`, em outro terminal):
 
-No GitHub:
+```bash
+cp .env.example .env
+npm install
+npm run dev
+```
 
-1. Clique em **New repository**.
-2. Defina um nome para o repositório da equipe, por exemplo:
+A aplicação sobe em `http://localhost:5173`. Detalhes em [`frontend/README.md`](frontend/README.md).
 
-   ```text
-   orbit-board-equipe-01
-   ```
+## Endpoints principais
 
-3. Escolha a visibilidade solicitada pelo docente.
-4. Não marque as opções de criação automática de `README`, `.gitignore` ou licença.
-5. Clique em **Create repository**.
-6. Adicione os demais integrantes da equipe como colaboradores.
+| Método | Endpoint | Descrição |
+|---|---|---|
+| GET | `/api/dashboard` | Métricas e tarefas recentes |
+| GET/POST | `/api/projects` | Listar / criar projetos |
+| GET/PUT/DELETE | `/api/projects/{id}` | Consultar / atualizar / excluir projeto |
+| GET/POST | `/api/tasks` | Listar (com filtros) / criar tarefas |
+| GET/PUT/DELETE | `/api/tasks/{id}` | Consultar / atualizar / excluir tarefa |
+| PATCH | `/api/tasks/{id}/status` | Alterar apenas o status da tarefa |
+| GET | `/api/team-members` | Listar integrantes disponíveis |
+| GET | `/health` | Health check da API |
 
-Copie a URL HTTPS do repositório criado. Exemplo:
+Contrato completo, exemplos de request/response e mapeamento de erros em [`docs/contrato-api.md`](docs/contrato-api.md).
+
+## Variáveis de ambiente
+
+Definidas em `.env` na raiz (ver [`.env.example`](.env.example)), usadas pelo `docker-compose.yml`:
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `BACKEND_PORT` | `5200` | Porta do host mapeada para a API. |
+| `FRONTEND_PORT` | `8080` | Porta do host mapeada para o front-end (Nginx). |
+| `VITE_API_URL` | `http://localhost:5200` | URL da API usada pelo front-end (definida em tempo de build). |
+| `ASPNETCORE_ENVIRONMENT` | `Production` | Ambiente do ASP.NET Core dentro do container. |
+
+Para execução local sem Docker, o front-end usa `frontend/.env` (ver [`frontend/.env.example`](frontend/.env.example)).
+
+## Evidências e documentação
+
+- [`docs/arquitetura.md`](docs/arquitetura.md) — arquitetura detalhada e ajustes técnicos realizados.
+- [`docs/contrato-api.md`](docs/contrato-api.md) — contrato completo da API.
+- [`docs/evidencias-testes.md`](docs/evidencias-testes.md) — testes manuais de integração e evidências de funcionamento.
+- [`docs/roteiro-apresentacao.md`](docs/roteiro-apresentacao.md) — roteiro da apresentação técnica final.
+
+## Estrutura do repositório
 
 ```text
-https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git
+orbit-board-project/
+├── backend/         API .NET 8 (Dockerfile, README.md)
+├── frontend/         Aplicação React (Dockerfile, README.md)
+├── docs/             Arquitetura, contrato de API, evidências e roteiro de apresentação
+├── docker-compose.yml
+├── .env.example
+├── .gitignore
+├── instrucoes.md     Sequência de comandos Git para o repositório da equipe
+└── README.md
 ```
 
----
+## Contribuição da equipe
 
-## 3. Subir o código-fonte para o repositório próprio
+> Preencher com a contribuição resumida de cada integrante (ex.: revisão de back-end, ajustes de front-end, Docker, testes, documentação, apresentação).
 
-Verifique o remoto atual:
-
-```bash
-git remote -v
-```
-
-Renomeie o repositório do docente para `upstream`:
-
-```bash
-git remote rename origin upstream
-```
-
-Adicione o repositório da equipe como novo `origin`:
-
-```bash
-git remote add origin https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git
-```
-
-Substitua a URL acima pela URL real do repositório da equipe.
-
-Verifique:
-
-```bash
-git remote -v
-```
-
-O resultado deverá ser semelhante a:
-
-```text
-origin    https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git (fetch)
-origin    https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git (push)
-upstream  https://github.com/denkencapacitacao/orbit-board-project.git (fetch)
-upstream  https://github.com/denkencapacitacao/orbit-board-project.git (push)
-```
-
-Envie o código inicial:
-
-```bash
-git branch -M main
-git push -u origin main
-```
-
-Depois, confirme no GitHub se todos os arquivos foram publicados corretamente.
-
----
-
-## 4. Trabalhar somente no repositório da equipe
-
-A partir desse momento, todos os integrantes deverão clonar o repositório próprio da equipe:
-
-```bash
-git clone https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git
-```
-
-Acesse a pasta:
-
-```bash
-cd orbit-board-equipe-01
-```
-
-Antes de iniciar uma nova atividade:
-
-```bash
-git switch main
-git pull origin main
-```
-
-Crie uma branch específica:
-
-```bash
-git switch -c feature/nome-da-atividade
-```
-
-Exemplo:
-
-```bash
-git switch -c feature/melhoria-tela-projetos
-```
-
-Após realizar as alterações:
-
-```bash
-git status
-git add .
-git commit -m "feat: descreve objetivamente a alteração"
-git push -u origin feature/nome-da-atividade
-```
-
-Depois, abra um **Pull Request** no GitHub para integrar a branch à branch principal definida pela equipe.
-
----
-
-## Fluxo resumido
-
-```text
-Repositório do docente
-        ↓ git clone
-Cópia local inicial
-        ↓ novo origin
-Repositório da equipe
-        ↓ branches e pull requests
-Desenvolvimento colaborativo
-```
-
----
-
-## Regras importantes
-
-- Não trabalhar diretamente no repositório do docente.
-- Não enviar alterações para o remoto `upstream`.
-- Utilizar o repositório da equipe como `origin`.
-- Criar branches para funcionalidades, correções e documentação.
-- Fazer commits pequenos e com mensagens claras.
-- Atualizar a branch principal antes de iniciar uma nova atividade.
-- Utilizar Pull Requests para revisar e integrar alterações.
-- Garantir que todos os integrantes tenham acesso ao repositório próprio.
-
----
-
-## Comandos principais
-
-```bash
-# Clonar o projeto base
-git clone https://github.com/denkencapacitacao/orbit-board-project.git
-cd orbit-board-project
-
-# Manter o repositório do docente como referência
-git remote rename origin upstream
-
-# Conectar o repositório da equipe
-git remote add origin https://github.com/NOME-DO-USUARIO/orbit-board-equipe-01.git
-
-# Enviar o código inicial
-git branch -M main
-git push -u origin main
-
-# Criar uma branch de trabalho
-git switch -c feature/nome-da-atividade
-
-# Registrar e enviar alterações
-git add .
-git commit -m "feat: descreve objetivamente a alteração"
-git push -u origin feature/nome-da-atividade
-```
+- Integrante 1 — 
+- Integrante 2 — 
+- Integrante 3 — 
