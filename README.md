@@ -4,8 +4,6 @@ Painel didático de gestão de projetos, tarefas e equipe — aplicação full s
 
 ## Equipe
 
-> Preencher com o nome de cada integrante da equipe.
-
 - Thiago Serra Andrade Leite
 - Thalia Rodrigues Pinto
 - Pamela do Nascimento Bernardo
