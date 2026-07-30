@@ -123,8 +123,6 @@ orbit-board-project/
 
 ## Contribuição da equipe
 
-> Preencher com a contribuição resumida de cada integrante (ex.: revisão de back-end, ajustes de front-end, Docker, testes, documentação, apresentação).
-
 - Integrante 1 — - Thiago Serra Andrade Leite — back-end / API
 - Integrante 2 — Thalia Rodrigues Pinto - Slides apresentação 
 - Integrante 3 — Pamela do Nascimento Bernardo - testes / documentação
